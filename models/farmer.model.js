@@ -19,21 +19,23 @@ const farmerDetailsSchema = new Schema({
         type: String,
         required: true,
     },
-    crops: {
-        type: Schema.Types.ObjectId,
-        ref: 'farmerCropsModel',
-    }
 })
 
 const farmerCropsSchema = Schema({
+    farmerId: {
+        type: Schema.Types.ObjectId,
+        require: true,
+    },
     crops: [
         {
-            cropType: {type: String,}
+            name: {type: String},
+            location: {type: String},
         }
     ]
 })
 
 farmerDetailsSchema.pre('validate', function (next){
+    console.log(Number(process.env.PASSWORD_SALTING))
     bcrypt.hash(this.password, Number(process.env.PASSWORD_SALTING))
     .then((hashedPassword)=>{
         this.password = hashedPassword

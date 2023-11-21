@@ -23,6 +23,7 @@ const createAccount = (req, res) => {
     farmerDetailsModel(farmerDetails).save()
         .then((details)=>{
             res.status(200).json({message: 'Account Created'})
+            console.log(details)
         })
         .catch((err)=>{
             console.error(err);
@@ -141,4 +142,5 @@ const resetPassword = (req, res) => {
         }
     })
 }
+
 module.exports = {createAccount, signIn, getFarmerDetails, sendResetPasswordLink, verifyResetEmail, resetPassword}
