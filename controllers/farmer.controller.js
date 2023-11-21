@@ -24,6 +24,29 @@ const createAccount = (req, res) => {
         .then((details)=>{
             res.status(200).json({message: 'Account Created'})
             console.log(details)
+            let mailOptions = {
+                from: process.env.USER_EMAIL,
+                to: [email],
+                subject: 'Pasword Reset',
+                html: `<div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; margin-top: 20px;">
+                        <h1 style="color: #333333;">Welcome to Klusterthon!</h1>
+                        <p style="color: #666666;">Dear ${detail.firstName},</p>
+                        <p style="color: #666666;">Thank you for creating an account on Klusterthon! We're excited to have you on board.</p>
+                        <p style="color: #666666;">To get started, click the button below to log in to your account:</p>
+                        <a href="" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; text-align: center; text-decoration: none; background-color: #4CAF50; color: #ffffff; border-radius: 5px; transition: background-color 0.3s;" target="_blank">Log In</a>
+                        <p style="color: #666666;">If you have any questions or need assistance, feel free to contact our support team at [Your Support Email].</p>
+                        <p style="color: #666666;">Best regards,<br>Klusterthon Team</p>
+                    </div>
+                    `
+            }
+            transporter.sendMail(mailOptions)
+            .then((response)=>{
+                console.log(response)
+                res.status(200).json({message: 'Email Sent'})
+            })
+            .catch((err) => {
+                console.log(err);
+            });
         })
         .catch((err)=>{
             console.error(err);
@@ -85,7 +108,7 @@ const sendResetPasswordLink = (req, res) => {
         }
         let token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' })
         let mailOptions = {
-            from: process.env.USEREMAIL,
+            from: process.env.USER_EMAIL,
             to: [email],
             subject: 'Pasword Reset',
             html: `<h1 style='text-align:center'>Pasword Reset</h1>

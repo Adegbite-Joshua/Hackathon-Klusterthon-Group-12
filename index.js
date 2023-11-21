@@ -14,7 +14,7 @@ mongoose.connect(MONGODB_URI)
     console.log('MongoDB connected');
 })
 .catch((err)=>{
-    console.error('Error Connecting To MongoDB', err);
+    console.error(`Error Connecting To MongoDB uri: ${MONGODB_URI}`, err);
 })
 
 app.use('/farmer', userRoute)
