@@ -1,9 +1,14 @@
 const { farmerDetailsModel } = require("../models/farmer.model");
-const { verify } = require('jsonwebtoken');
+const { sign, verify } = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcryptjs');
+
 
 const USER_EMAIL = process.env.USER_EMAIL;
 const USER_PASSWORD = process.env.USER_PASSWORD;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -64,14 +69,15 @@ const signIn = (req, res) => {
     let { password, email } = req.body
     farmerDetailsModel.findOne({ email })
         .then((details) => {
+            console.log(details)
             if (details == null) {
-                return res.status(477).json('Invalid Login Details')
+                res.status(477).json('Invalid Login Email')
+                return;
             }
             console.log(details)
-            const JWT_SECRET = process.env.JWT_SECRET;
             details.validatePassword(password, (error, same) => {
                 if (same) {
-                    let token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '10h' })
+                    let token = sign({ email }, JWT_SECRET, { expiresIn: '1h' })
                     res.status(200).json({ message: 'Successful', token })
                 } else {
                     res.status(478).json({message: 'Wrong Password'})
@@ -86,13 +92,13 @@ const signIn = (req, res) => {
 
 // Function For Getting The Farmer's Details
 const getFarmerDetails = (req, res) => {
-    let {token} = req.body;
-    const JWT_SECRET = process.env.JWT_SECRET;
+    let {token} = req.query;
+    console.log(req.query)
     verify(token, JWT_SECRET, (error, result) => {
         if (!error) {
             farmerDetailsModel.findOne({email: result.email})
             .then((details)=>{
-                res.status(200).json({ details })
+                res.status(200).json( details )
             })
             .catch((err)=>{
                 console.error(err)
@@ -110,7 +116,7 @@ const sendResetPasswordLink = (req, res) => {
         if(details == null){
             return res.status(478).json({message: 'Invalid Email'})
         }
-        let token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' })
+        let token = sign({ email }, JWT_SECRET, { expiresIn: '1h' })
         let mailOptions = {
             from: process.env.USER_EMAIL,
             to: [email],
@@ -126,7 +132,7 @@ const sendResetPasswordLink = (req, res) => {
         transporter.sendMail(mailOptions)
         .then((response)=>{
             console.log(response)
-            res.status(200).json({message: 'Email Sent'})
+            res.status(200).json({message: 'Email Sent', token})
         })
         .catch((err) => {
             console.log(err);
@@ -134,7 +140,7 @@ const sendResetPasswordLink = (req, res) => {
     })
 }
 
-const verifyResetEmail = (req, res) => {
+const verifyResetToken = (req, res) => {
     let { token } = req.body;
     const JWT_SECRET = process.env.JWT_SECRET;
     verify(token, JWT_SECRET, (error, result) => {
@@ -157,17 +163,24 @@ const resetPassword = (req, res) => {
     const JWT_SECRET = process.env.JWT_SECRET;
     verify(token, JWT_SECRET, (error, result) => {
         if (!error) {
-            farmerDetailsModel.findOneAndUpdate({email: result.email}, {password})
-            .then((details)=>{
-                res.status(200).json({ message: 'Successful' })
+            let hashedPassword;
+            bcrypt.hash(password, Number(process.env.PASSWORD_SALTING))
+            .then((newPassword)=>{
+                farmerDetailsModel.findOneAndUpdate({email: result.email}, {password: newPassword})
+                .then((details)=>{
+                    res.status(200).json({ message: 'Successful' })
+                })
+                .catch((err)=>{
+                    console.error(err)
+                })
             })
             .catch((err)=>{
-                console.error(err)
-            })            
+                console.log(err);
+            })
         } else {
             res.status(476).json({ message: 'Invalid Token' })
         }
     })
 }
 
-module.exports = {createAccount, signIn, getFarmerDetails, sendResetPasswordLink, verifyResetEmail, resetPassword}
+module.exports = {createAccount, signIn, getFarmerDetails, sendResetPasswordLink, verifyResetToken, resetPassword}
