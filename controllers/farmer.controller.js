@@ -50,6 +50,9 @@ const createAccount = (req, res) => {
         })
         .catch((err)=>{
             console.error(err);
+            if(err.code = 11000){
+                return res.status(478).json({message: 'Email Already Exist'})
+            }
             res.status(500).json({message: 'Server Error'})
         })
 }
