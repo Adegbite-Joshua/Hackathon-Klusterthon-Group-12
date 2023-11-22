@@ -121,13 +121,22 @@ const sendResetPasswordLink = (req, res) => {
             from: process.env.USER_EMAIL,
             to: [email],
             subject: 'Pasword Reset',
-            html: `<h1 style='text-align:center'>Pasword Reset</h1>
-
-                    <p style='text-align:center'>Dear ${details.firstName}, you request for a password reset link</p>
-                    <a href='token'><button style='text-align:center; background-color: blue;'>Click Here</button></a>
-                    <p style='text-align:center'>This link expires in the next 1 hour</p>
-                    
-                    <p style='text-align:center; background-color: blue;'><small>We are glad to have you!</small></p>`
+            html: `<div class="container">
+            <h2>Password Reset Request</h2>
+            <p>Dear ${details.firstName},</p>
+            <p>We received a request to reset the password associated with your account. To proceed with the password reset, please follow the instructions below:</p>
+            <ol>
+              <li><strong>Click on the following link to reset your password:</strong>
+                <br>
+                <a href="[Password Reset Link]">Password Reset Link</a>
+                <br><br>
+                <em>Note: This link is valid for the next [X] hours. After that, you will need to submit another password reset request.</em></li>
+              <li><strong>If you did not request a password reset, please ignore this email.</strong> Your account security is important to us.</li>
+              <li><strong>Ensure that you are using a secure and up-to-date web browser when accessing the link.</strong></li>
+            </ol>
+            <p>If you encounter any issues or need further assistance, please contact our support team at <a href="[Support Email or Phone Number]">[Support Email or Phone Number]</a>.</p><p>
+              Thank you for your prompt attention to this matter.</p>
+            <p>Best regards,<br>[Your Company Name]<br>[Your Company Contact Information]</p></div>`
         }
         transporter.sendMail(mailOptions)
         .then((response)=>{
