@@ -26,11 +26,11 @@ const createAccount = (req, res) => {
             console.log(details)
             let mailOptions = {
                 from: process.env.USER_EMAIL,
-                to: [email],
+                to: [details.email],
                 subject: 'Pasword Reset',
                 html: `<div style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; margin-top: 20px;">
                         <h1 style="color: #333333;">Welcome to Klusterthon!</h1>
-                        <p style="color: #666666;">Dear ${detail.firstName},</p>
+                        <p style="color: #666666;">Dear ${details.firstName},</p>
                         <p style="color: #666666;">Thank you for creating an account on Klusterthon! We're excited to have you on board.</p>
                         <p style="color: #666666;">To get started, click the button below to log in to your account:</p>
                         <a href="" style="display: inline-block; padding: 10px 20px; margin-top: 20px; font-size: 16px; text-align: center; text-decoration: none; background-color: #4CAF50; color: #ffffff; border-radius: 5px; transition: background-color 0.3s;" target="_blank">Log In</a>
@@ -51,9 +51,10 @@ const createAccount = (req, res) => {
         .catch((err)=>{
             console.error(err);
             if(err.code = 11000){
-                return res.status(478).json({message: 'Email Already Exist'})
+                res.status(478).json({message: 'Email Already Exist'})
+            } else {
+                res.status(500).json({message: 'Server Error'})
             }
-            res.status(500).json({message: 'Server Error'})
         })
 }
 
