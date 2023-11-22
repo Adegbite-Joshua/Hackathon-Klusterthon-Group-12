@@ -92,8 +92,7 @@ const signIn = (req, res) => {
 
 // Function For Getting The Farmer's Details
 const getFarmerDetails = (req, res) => {
-    let {token} = req.query;
-    console.log(req.query)
+    let token = req.headers.authorization.split(' ')[1]
     verify(token, JWT_SECRET, (error, result) => {
         if (!error) {
             farmerDetailsModel.findOne({email: result.email})
@@ -109,6 +108,7 @@ const getFarmerDetails = (req, res) => {
     })
 }
 
+// Function For Requesting Forgotten Password Link
 const sendResetPasswordLink = (req, res) => {
     let { email } = req.body;
     farmerDetailsModel.findOne({email}, {firstName: 1})
@@ -130,7 +130,7 @@ const sendResetPasswordLink = (req, res) => {
                 <br>
                 <a href="[Password Reset Link]">Password Reset Link</a>
                 <br><br>
-                <em>Note: This link is valid for the next [X] hours. After that, you will need to submit another password reset request.</em></li>
+                <em>Note: This link is valid for the next 1 hour. After that, you will need to submit another password reset request.</em></li>
               <li><strong>If you did not request a password reset, please ignore this email.</strong> Your account security is important to us.</li>
               <li><strong>Ensure that you are using a secure and up-to-date web browser when accessing the link.</strong></li>
             </ol>
@@ -149,6 +149,7 @@ const sendResetPasswordLink = (req, res) => {
     })
 }
 
+// Fuction For Validating Reset Password Token
 const verifyResetToken = (req, res) => {
     let { token } = req.body;
     const JWT_SECRET = process.env.JWT_SECRET;
@@ -167,6 +168,7 @@ const verifyResetToken = (req, res) => {
     })
 }
 
+// Function For Reseting The Password
 const resetPassword = (req, res) => {
     let {token, password} = req.body;
     const JWT_SECRET = process.env.JWT_SECRET;
