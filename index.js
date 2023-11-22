@@ -2,11 +2,13 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const mongoose = require('mongoose');
-const userRoute = require('./routes/farmer.route');
 const cors = require('cors');
 app.use(cors());
 app.use(express.urlencoded({ extended: true, limit: '200mb' }));
 app.use(express.json({limit: '200mb'}));
+
+const farmerRoute = require('./routes/farmer.route');
+const cropRoute = require('./routes/crop.route');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI, {
@@ -20,7 +22,8 @@ mongoose.connect(MONGODB_URI, {
     console.error('Error Connecting To MongoDB', err);
 })
 
-app.use('/farmer', userRoute)
+app.use('/farmer', farmerRoute)
+app.use('/crop', cropRoute)
 
 app.get('/', (req, res)=>{
     res.status(200).json({
@@ -38,6 +41,7 @@ app.get('/', (req, res)=>{
 })
 
 const PORT = process.env.PORT;
+console.log(PORT);
 app.listen(PORT, ()=>{
     console.log('server started')
 })
