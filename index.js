@@ -25,7 +25,15 @@ app.use('/farmer', userRoute)
 app.get('/', (req, res)=>{
     res.status(200).json({
         name: 'Klusterthon Group 12',
-        Backend: 'Backend'
+        Backend: 'Backend',
+        groupDetails:'Precision Farming for Best Product Result Using Data',
+        members:[
+        {name: 'EbunOluwa David-Suberu' , role: 'Team Lead|Front-end dev'}
+        {name: 'Joshua Adegbite' , role: 'Fullstack dev'}
+        {name: 'Victor Banjo' , role: 'Front-end dev'}
+        {name: 'Glorious Olajire' , role: 'Front-end dev'}
+        {name: 'Seyi Samuel' , role: 'Data Scientist'}
+        ]
     })
 })
 
