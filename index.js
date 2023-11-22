@@ -28,11 +28,11 @@ app.get('/', (req, res)=>{
         Backend: 'Backend',
         groupDetails:'Precision Farming for Best Product Result Using Data',
         members:[
-        {name: 'EbunOluwa David-Suberu' , role: 'Team Lead|Front-end dev'}
-        {name: 'Joshua Adegbite' , role: 'Fullstack dev'}
-        {name: 'Victor Banjo' , role: 'Front-end dev'}
-        {name: 'Glorious Olajire' , role: 'Front-end dev'}
-        {name: 'Seyi Samuel' , role: 'Data Scientist'}
+        {name: 'EbunOluwa David-Suberu' , role: 'Team Lead|Front-end dev'},
+        {name: 'Joshua Adegbite' , role: 'Fullstack dev'},
+        {name: 'Victor Banjo' , role: 'Front-end dev'},
+        {name: 'Glorious Olajire' , role: 'Front-end dev'},
+        {name: 'Seyi Samuel' , role: 'Data Scientist'},
         ]
     })
 })
