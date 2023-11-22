@@ -9,12 +9,15 @@ app.use(express.urlencoded({ extended: true, limit: '200mb' }));
 app.use(express.json({limit: '200mb'}));
 
 const MONGODB_URI = process.env.MONGODB_URI;
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
 .then(()=>{
     console.log('MongoDB connected');
 })
-.catch((err)=>{
-    console.error(`Error Connecting To MongoDB uri: ${MONGODB_URI}`, err);
+.catch((err)=>{ 
+    console.error('Error Connecting To MongoDB', err);
 })
 
 app.use('/farmer', userRoute)
