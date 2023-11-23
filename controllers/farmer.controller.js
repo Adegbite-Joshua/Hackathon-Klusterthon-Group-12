@@ -78,7 +78,7 @@ const signIn = (req, res) => {
             details.validatePassword(password, (error, same) => {
                 if (same) {
                     let token = sign({ email }, JWT_SECRET, { expiresIn: '1h' })
-                    res.status(200).json({ message: 'Successful', token })
+                    res.status(200).json({ message: 'Successful', details })
                 } else {
                     res.status(478).json({message: 'Wrong Password'})
                 }
