@@ -85,7 +85,7 @@ const signIn = (req, res) => {
                         res.status(200).json({ message: 'Successful', details: localDetails, token })
                     } else {
                         let localDetails = {details, crops: findCrops.crops}
-                        res.status(200).json({ message: 'Successful', details: localDetails, token })                   
+                        res.status(200).json({ message: 'Successful', farmer: localDetails, token })                   
                     }
                     
                 } else {
