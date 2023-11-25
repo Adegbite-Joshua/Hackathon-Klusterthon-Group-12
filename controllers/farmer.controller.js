@@ -1,4 +1,4 @@
-const { farmerDetailsModel } = require("../models/farmer.model");
+const { farmerDetailsModel, farmerCropsModel } = require("../models/farmer.model");
 const { sign, verify } = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
@@ -68,17 +68,26 @@ const signIn = (req, res) => {
     console.log(req.body);
     let { password, email } = req.body
     farmerDetailsModel.findOne({ email })
-        .then((details) => {
+        .then(async(details) => {
             console.log(details)
             if (details == null) {
                 res.status(477).json('Invalid Login Email')
                 return;
             }
             console.log(details)
+            let findCrops = await farmerCropsModel.findOne({farmerId: details._id})
             details.validatePassword(password, (error, same) => {
                 if (same) {
                     let token = sign({ email }, JWT_SECRET, { expiresIn: '1h' })
-                    res.status(200).json({ message: 'Successful', details })
+                    if(findCrops==null){
+                        farmerCropsModel({farmerId: details._id, crops: []}).save()
+                        let localDetails = {details, crops: []}
+                        res.status(200).json({ message: 'Successful', details: localDetails, token })
+                    } else {
+                        let localDetails = {details, crops: findCrops.crops}
+                        res.status(200).json({ message: 'Successful', details: localDetails, token })                   
+                    }
+                    
                 } else {
                     res.status(478).json({message: 'Wrong Password'})
                 }
@@ -96,8 +105,16 @@ const getFarmerDetails = (req, res) => {
     verify(token, JWT_SECRET, (error, result) => {
         if (!error) {
             farmerDetailsModel.findOne({email: result.email})
-            .then((details)=>{
-                res.status(200).json( details )
+            .then(async(details)=>{
+                let findCrops = await farmerCropsModel.findOne({farmerId: details._id})
+                if(findCrops==null){
+                    farmerCropsModel({farmerId: details._id, crops: []}).save()
+                    let localDetails = {details, crops: []}
+                    res.status(200).json( localDetails )
+                } else {
+                    let localDetails = {details, crops: findCrops.crops}
+                    res.status(200).json( localDetails )                    
+                }
             })
             .catch((err)=>{
                 console.error(err)
