@@ -28,8 +28,15 @@ const farmerCropsSchema = Schema({
     },
     crops: [
         {
-            name: {type: String},
-            location: {type: String},
+            details: {
+                label: {type: String},
+                Country: {type: String},
+                ph: {type: Number},
+                temperature:{type: Number},
+                humidity:{type: Number},
+                waterAvailability:{type: Number},
+            },
+            predictions: {type: Array}
         }
     ]
 })
