@@ -1,70 +1,103 @@
 const axios = require('axios');
 const { farmerDetailsModel, farmerCropsModel } = require('../models/farmer.model');
 
-const getCropPrediction = async(req, res) => {
+const getCropPrediction = async (req, res) => {
     console.log(req.body);
-    let {Country, label, ph, temperature, humidity, water, id} = req.body;
-    if(!temperature){
+    let { Country, label, ph, temperature, humidity, waterAvailability, id } = req.body;
+    if (temperature == undefined) {
         console.log('First Model Request');
-        let details = {
-            label: 'cotton',
-            Country: 'Nigeria',
-            ph: 6.5,
-            humidity: 80.0,
-            waterAvailability: 0.6,
-            temperature: 25.5
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "label": label,
+            "Country": Country
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
         };
-        // axios.post('https://­prediction-engine-pra­ctice.onrender.com/­predict_classification/', details)
+
+        fetch("https://prediction-engine-practice.onrender.com/predict_regression/", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                console.log(result.predictions)
+                // let upload = farmerCropsModel.findOneAndUpdate({ farmerId: id }, { $push: { crops: {details: { label, Country }, predictions: result?.predictions} } })
+                // if (upload == null) {
+                //     farmerCropsModel({ farmerId: id, crops: [{ details: { label, Country }, predictions: result?.predictions }] }).save()
+                // }
+                res.status(200).json(data = { details: { Country, label }, predictions: result?.predictions });
+            })
+            .catch(error => {
+                console.log('error', error);
+                res.status(500).json({message: 'Server Error'})
+            });
+
+        // axios.post('https://­prediction-engine-pra­ctice.onrender.com/­predict_classification/', JSON.stringify(details))
         // .then((result)=>{
         //     console.log('result', result);
         //     console.log('result', result.data);
-        //     // let upload = farmerCropsModel.findOneAndUpdate({farmerId: id}, {$push: {crops: {label: cropName, Country: location}}})
-        //     // if(upload==null){
-        //     //     farmerCropsModel({farmerId: id, crops: [{label: cropName, Country: location}]}).save()
-        //     // }
+        //
         // })
         // .catch((err)=>{
         //     console.log(err);
         // })
-        try {
-            const response = await fetch('https://­prediction-engine-pra­ctice.onrender.com/­predict_classificatio­n/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(details)
-            })
-            console.log(response);
-            const data = await response.json()
-            console.log(data);
-        } catch (error) {
-            console.error(error);
-        }
+        // try {
+        //     const response = await fetch('https://­prediction-engine-pra­ctice.onrender.com/­predict_classificatio­n/', {
+        //         method: 'POST',
+        //         // headers: {
+        //         //     'Content-Type': 'application/json'
+        //         // },
+        //         body: JSON.stringify(details)
+        //     })
+        //     console.log(response);
+        //     const data = await response.json()
+        //     console.log(data);
+        // } catch (error) {
+        //     console.error(error);
+        // }
     } else {
-        console.log('Second Model Request');
-        axios.post('https://­prediction-engine-pra­ctice.onrender.com/­predict_classificatio­n/', {
-            Country,
-            label, 
-            ph, 
-            temperature, 
-            humidity, 
-            "waterAvailablity": water
-        })
-        .then((result)=>{
-            console.log('result', result);
-            // let upload = farmerCropsModel.findOneAndUpdate({farmerId: id}, {$push: {crops: {Country: location,label: cropName, ph, temperature, humidity, "water availablity": water}}})
-            // if(upload==null){
-            //     farmerCropsModel({farmerId: id, crops: [{Country: location,label: cropName, ph, temperature, humidity, "water availablity": water}]}).save()
-            // }
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+            "label": label,
+            "Country": Country,
+            "temperature": temperature,
+            "humidity": humidity,
+            "water availability": waterAvailability,
+            "ph": ph
+        });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch("https://prediction-engine-practice.onrender.com/predict_classification/", requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                console.log(result.predictions)
+                let upload = farmerCropsModel.findOneAndUpdate({ farmerId: id }, { $push: { crops: { details: { Country, label, ph, temperature, humidity, waterAvailability }, predictions: result.predictions } } })
+                if (upload == null) {
+                    farmerCropsModel({ farmerId: id, crops: [{ details: { Country, label, ph, temperature, humidity, waterAvailability }, predictions: result.predictions }] }).save()
+                }
+                res.status(200).json(data = { details: { Country, label, ph, temperature, humidity, waterAvailability }, predictions: result.predictions });
+            })
+            .catch(error => {
+                console.log('error', error)
+                res.status(500).json({ message: 'Server Error' })
+            });
+
     }
-    res.status(200).json({data: 'Working on the connecting to the ML Model'});
 }
 
-const findCrop = async(req, res) => {
+const findCrop = async (req, res) => {
     const regex = new RegExp(searchLetter, 'i'); // 'i' flag for case-insensitive search
 
     // Use $regex to search for the letter in any field
@@ -85,4 +118,4 @@ const findCrop = async(req, res) => {
     console.log('Search result:', result);
 }
 
-module.exports = {getCropPrediction}
+module.exports = { getCropPrediction }
