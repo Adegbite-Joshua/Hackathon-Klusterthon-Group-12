@@ -71,10 +71,9 @@ const signIn = (req, res) => {
         .then(async(details) => {
             console.log(details)
             if (details == null) {
-                res.status(477).json('Invalid Login Email')
+                res.status(477).json({message: 'Invalid Login Email'})
                 return;
             }
-            console.log(details)
             let findCrops = await farmerCropsModel.findOne({farmerId: details._id})
             details.validatePassword(password, (error, same) => {
                 if (same) {
