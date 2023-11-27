@@ -77,7 +77,7 @@ const signIn = (req, res) => {
             let findCrops = await farmerCropsModel.findOne({farmerId: details._id})
             details.validatePassword(password, (error, same) => {
                 if (same) {
-                    let token = sign({ email }, JWT_SECRET, { expiresIn: '1h' })
+                    let token = sign({ email }, JWT_SECRET, { expiresIn: '3650d' })
                     if(findCrops==null){
                         farmerCropsModel({farmerId: details._id, crops: []}).save()
                         let localDetails = {details, crops: []}
