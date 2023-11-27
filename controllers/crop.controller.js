@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { farmerDetailsModel, farmerCropsModel } = require('../models/farmer.model');
 
+// Function to get the crop's prediction
 const getCropPrediction = async (req, res) => {
     console.log(req.body);
     let { Country, label, ph, temperature, humidity, waterAvailability, id } = req.body;
