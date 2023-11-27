@@ -31,7 +31,11 @@ const getCropPrediction = async (req, res) => {
             };
         
             const classificationResult = await fetchData("https://prediction-engine-practice.onrender.com/predict_classification/", classificationData);
-        
+            
+            if(!classificationResult?.predictions){
+                res.status(478).json({message: 'No Prediction For The Datas Provided'})
+                return;
+            }
             const cropDetails = {
                 Country,
                 label,
@@ -77,7 +81,10 @@ const getCropPrediction = async (req, res) => {
         fetch("https://prediction-engine-practice.onrender.com/predict_classification/", requestOptions)
             .then(response => response.json())
             .then(result => {
-                console.log(result.predictions)
+                if(!result?.predictions){
+                    res.status(478).json({message: 'No Prediction For The Datas Provided'})
+                    return;
+                }
                 let upload = farmerCropsModel.findOneAndUpdate({ farmerId: id }, { $push: { crops: { details: { Country, label, ph, temperature, humidity, waterAvailability }, predictions: result.predictions } } })
                 if (upload == null) {
                     farmerCropsModel({ farmerId: id, crops: [{ details: { Country, label, ph, temperature, humidity, waterAvailability }, predictions: result.predictions }] }).save()
