@@ -20,7 +20,10 @@ const getCropPrediction = async (req, res) => {
         
         try {
             const regressionResult = await fetchData("https://prediction-engine-practice.onrender.com/predict_regression/", { label, country: Country });
-        
+            if(!regressionResult?.predictions){
+                res.status(478).json({message: 'No Prediction For The Datas Provided'})
+                return;
+            }
             const classificationData = {
                 label,
                 Country,
