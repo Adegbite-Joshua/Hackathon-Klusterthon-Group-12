@@ -88,12 +88,13 @@ const getCropPrediction = async (req, res) => {
                 res.status(478).json({ message: 'No Prediction For The Datas Provided' })
             })
     } else {
+        console.log('Second Model Request')
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
         var raw = JSON.stringify({
             "label": label,
-            "country": country,
+            "Country": country,
             "temperature": temperature,
             "humidity": humidity,
             "water availability": waterAvailability,
@@ -107,8 +108,9 @@ const getCropPrediction = async (req, res) => {
             redirect: 'follow'
         };
 
-        fetch("https://prediction-engine-practice.onrender.com/predict_classification/", requestOptions)
-            .then(response => response.json())
+        fetch("https://prediction-engine-practice.onrender.com/predict_combined/", requestOptions)
+            .then(response => {console.log(response)
+            return response.json()})
             .then(result => {
                 if (!result?.predictions) {
                     res.status(478).json({ message: 'No Prediction For The Datas Provided' })
