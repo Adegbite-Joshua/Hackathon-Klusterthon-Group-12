@@ -109,8 +109,7 @@ const getCropPrediction = async (req, res) => {
         };
 
         fetch("https://prediction-engine-practice.onrender.com/predict_combined/", requestOptions)
-            .then(response => {console.log(response)
-            return response.json()})
+            .then(response => response.json())
             .then(result => {
                 if (!result?.predictions) {
                     res.status(478).json({ message: 'No Prediction For The Datas Provided' })
