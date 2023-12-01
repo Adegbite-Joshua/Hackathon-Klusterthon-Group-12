@@ -84,7 +84,8 @@ const getCropPrediction = async (req, res) => {
                 res.status(200).json(data = { details: { country, label, ph, temperature, humidity, waterAvailability }, predictions: result.predictions });
             })
             .catch((err)=>{
-                consoe.log('An error occurred', err)
+                console.log('An error occurred', err)
+                res.status(478).json({ message: 'No Prediction For The Datas Provided' })
             })
     } else {
         var myHeaders = new Headers();
@@ -121,7 +122,7 @@ const getCropPrediction = async (req, res) => {
             })
             .catch(error => {
                 console.log('error', error)
-                res.status(500).json({ message: 'Server Error' })
+                res.status(478).json({ message: 'No Prediction For The Datas Provided' })
             });
 
     }
